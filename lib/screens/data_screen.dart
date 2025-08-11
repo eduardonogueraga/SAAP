@@ -3,6 +3,7 @@ import '../widgets/data_button.dart';
 import 'entries/entries_screen.dart';
 import 'notices/notices_screen.dart';
 import 'detections/detections_screen.dart';
+import 'logs/logs_screen.dart';
 
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
@@ -55,7 +56,12 @@ class DataScreen extends StatelessWidget {
               icon: Icons.article,
               label: 'Logs',
               color: Colors.purple.shade100,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LogsScreen()),
+                );
+              },
             ),
           ],
         ),
