@@ -291,14 +291,14 @@ class _EntriesScreenState extends State<EntriesScreen> {
             final String creadoFmt = (entry['_created_fmt'] as String?) ?? _formatDate(creado);
 
             final IconData icon = isActivation
-                ? Icons.toggle_on
+                ? Icons.lock
                 : isDeactivation
-                    ? Icons.toggle_off
+                    ? Icons.lock_open
                     : Icons.info_outline;
             final Color color = isActivation
-                ? Colors.green
+                ? Colors.blue
                 : isDeactivation
-                    ? Colors.red
+                    ? Colors.green
                     : Colors.blueGrey;
 
             return Card(
@@ -312,7 +312,9 @@ class _EntriesScreenState extends State<EntriesScreen> {
                   child: Icon(icon, color: color),
                 ),
                 title: Text(
-                  tipo.toUpperCase(),
+                  isActivation
+                      ? 'Activacion'
+                      : (isDeactivation ? 'Desactivacion' : tipo.toUpperCase()),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,

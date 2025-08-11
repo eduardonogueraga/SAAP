@@ -87,23 +87,11 @@ class DetailInfo extends StatelessWidget {
   }
 
   (IconData, Color, String) _headerFromTipoAndTime(BuildContext context) {
-    final tipo = (data['tipo'] ?? '').toString();
-    final lower = tipo.toLowerCase();
-    final isActivation = lower.contains('activ') && !lower.contains('desactiv');
-    final isDeactivation = lower.contains('desactiv');
-
-    final icon = isActivation
-        ? Icons.toggle_on
-        : isDeactivation
-            ? Icons.toggle_off
-            : Icons.info_outline;
-    final color = isActivation
-        ? Colors.green
-        : isDeactivation
-            ? Colors.red
-            : Theme.of(context).colorScheme.primary;
-    final title = (tipo.isEmpty ? 'Detalle' : tipo.toUpperCase());
-    return (icon, color, title);
+    // Generic header for all cases
+    final icon = Icons.info_outline;
+    final color = Theme.of(context).colorScheme.primary;
+    final headerTitle = title.isNotEmpty ? title : 'Detalle';
+    return (icon, color, headerTitle);
   }
 
   @override

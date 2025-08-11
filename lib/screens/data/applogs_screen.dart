@@ -122,18 +122,14 @@ class _AppLogsScreenState extends State<AppLogsScreen> {
   }
 
   void _openFilters() {
-    // Selectables: tipo (from data), desc (from data), date range
+    // Selectables: tipo (from data), date range
     final Set<String> tipos = _items
         .map((e) => (e['tipo'] ?? '').toString())
         .where((s) => s.isNotEmpty && s.toLowerCase() != 'null')
         .toSet();
     String? tipoSel = (_filters['tipo']?.toString());
 
-    final Set<String> desces = _items
-        .map((e) => (e['desc'] ?? '').toString())
-        .where((s) => s.isNotEmpty && s.toLowerCase() != 'null')
-        .toSet();
-    String? descSel = (_filters['desc']?.toString());
+    // Removed description filter
 
     DateTime? from = _filters['created_from'] is String
         ? DateTime.tryParse(_filters['created_from'])
@@ -185,25 +181,22 @@ class _AppLogsScreenState extends State<AppLogsScreen> {
                       decoration: const InputDecoration(labelText: 'Tipo'),
                       hint: const Text('Todos'),
                       items: tipos
-                          .map((v) => DropdownMenuItem<String>(value: v, child: Text(v.toUpperCase())))
+                          .map((v) {
+                            final low = v.toLowerCase();
+                            final label = low == 'api'
+                                ? 'JOB'
+                                : (low == 'alarm' ? 'API' : v.toUpperCase());
+                            return DropdownMenuItem<String>(
+                              value: v,
+                              child: Text(label),
+                            );
+                          })
                           .toList(),
                       onChanged: (v) => setModalState(() => tipoSel = v),
                     ),
                     const SizedBox(height: 8),
                   ],
-                  if (desces.isNotEmpty) ...[
-                    DropdownButtonFormField<String>(
-                      value: descSel,
-                      isExpanded: true,
-                      decoration: const InputDecoration(labelText: 'Descripción'),
-                      hint: const Text('Todas'),
-                      items: desces
-                          .map((v) => DropdownMenuItem<String>(value: v, child: Text(v)))
-                          .toList(),
-                      onChanged: (v) => setModalState(() => descSel = v),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+                  // Description filter removed
                   Row(
                     children: [
                       Expanded(
@@ -257,7 +250,6 @@ class _AppLogsScreenState extends State<AppLogsScreen> {
                           onPressed: () {
                             final newFilters = <String, dynamic>{};
                             if (tipoSel != null && tipoSel!.isNotEmpty) newFilters['tipo'] = tipoSel;
-                            if (descSel != null && descSel!.isNotEmpty) newFilters['desc'] = descSel;
                             if (from != null) newFilters['created_from'] = fmt(from);
                             if (to != null) newFilters['created_to'] = fmt(to);
                             setState(() {
