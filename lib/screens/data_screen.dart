@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/data_button.dart';
 import 'entries/entries_screen.dart';
+import 'notices/notices_screen.dart';
 
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
@@ -37,7 +38,12 @@ class DataScreen extends StatelessWidget {
               icon: Icons.mail,
               label: 'Mensajes',
               color: Colors.red.shade100,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NoticesScreen()),
+                );
+              },
             ),
             DataButton(
               icon: Icons.article,
