@@ -6,6 +6,7 @@ import 'detections/detections_screen.dart';
 import 'logs/logs_screen.dart';
 import 'packages/packages_screen.dart';
 import 'system_notices/system_notices_screen.dart';
+import 'applogs/applogs_screen.dart';
 
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
@@ -100,7 +101,10 @@ class DataScreen extends StatelessWidget {
               label: 'SAAS LOGS',
               color: Colors.green.shade100,
               onTap: () {
-                // TODO: Navegar a SAAS LOGS
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AppLogsScreen()),
+                );
               },
             ),
           ],
