@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/data_button.dart';
 import 'entries/entries_screen.dart';
 import 'notices/notices_screen.dart';
+import 'detections/detections_screen.dart';
 
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
@@ -32,7 +33,12 @@ class DataScreen extends StatelessWidget {
               icon: Icons.visibility,
               label: 'Detecciones',
               color: Colors.orange.shade100,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DetectionsScreen()),
+                );
+              },
             ),
             DataButton(
               icon: Icons.mail,

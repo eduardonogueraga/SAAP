@@ -329,7 +329,7 @@ class _EntriesScreenState extends State<EntriesScreen> {
                         const Icon(Icons.schedule, size: 14, color: Colors.grey),
                         const SizedBox(width: 4),
                         Text(
-                          'Creado: $creadoFmt',
+                          'Fecha: $creadoFmt',
                           style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                         ),
                       ],

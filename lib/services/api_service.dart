@@ -19,17 +19,16 @@ class ApiService {
       'offset': '$offset',
     };
     final f = filters ?? {};
-    void addIfPresent(String key, dynamic value) {
-      if (value == null) return;
+    // Accept any provided filters. Explicitly avoid overriding limit/offset here.
+    for (final entry in f.entries) {
+      final key = entry.key;
+      if (key == 'limit' || key == 'offset') continue;
+      final value = entry.value;
+      if (value == null) continue;
       final s = value.toString();
-      if (s.isEmpty) return;
+      if (s.isEmpty) continue;
       query[key] = s;
     }
-    addIfPresent('tipo', f['tipo']);
-    addIfPresent('modo', f['modo']);
-    addIfPresent('restaurada', f['restaurada']);
-    addIfPresent('created_from', f['created_from']);
-    addIfPresent('created_to', f['created_to']);
 
     final uri = Uri.parse(endpoint).replace(queryParameters: query);
     final response = await http.get(uri);
