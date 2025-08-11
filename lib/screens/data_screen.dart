@@ -63,6 +63,38 @@ class DataScreen extends StatelessWidget {
                 );
               },
             ),
+            DataButton(
+              icon: Icons.window,
+              label: 'Paquetes',
+              color: Colors.teal.shade100,
+              onTap: () {
+                // TODO: Navegar a Paquetes
+              },
+            ),
+            DataButton(
+              icon: Icons.notifications,
+              label: 'Notificaciones',
+              color: Colors.amber.shade100,
+              onTap: () {
+                // TODO: Navegar a Notificaciones
+              },
+            ),
+            DataButton(
+              icon: Icons.info,
+              label: 'SAA INFO',
+              color: Colors.lightBlue.shade100,
+              onTap: () {
+                // TODO: Navegar a SAA INFO
+              },
+            ),
+            DataButton(
+              icon: Icons.list_alt,
+              label: 'SAAS LOGS',
+              color: Colors.green.shade100,
+              onTap: () {
+                // TODO: Navegar a SAAS LOGS
+              },
+            ),
           ],
         ),
       ),
