@@ -4,6 +4,7 @@ import 'entries/entries_screen.dart';
 import 'notices/notices_screen.dart';
 import 'detections/detections_screen.dart';
 import 'logs/logs_screen.dart';
+import 'packages/packages_screen.dart';
 
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
@@ -68,7 +69,10 @@ class DataScreen extends StatelessWidget {
               label: 'Paquetes',
               color: Colors.teal.shade100,
               onTap: () {
-                // TODO: Navegar a Paquetes
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PackagesScreen()),
+                );
               },
             ),
             DataButton(
