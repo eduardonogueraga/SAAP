@@ -26,7 +26,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.calendar_today,
               label: 'Entradas',
-              color: Colors.blue.shade100,
+              color: Colors.indigo.shade500,
               onTap: () {
                 Navigator.push(
                   context,
@@ -37,7 +37,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.visibility,
               label: 'Detecciones',
-              color: Colors.orange.shade100,
+              color: Colors.indigo.shade600,
               onTap: () {
                 Navigator.push(
                   context,
@@ -48,7 +48,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.mail,
               label: 'Mensajes',
-              color: Colors.red.shade100,
+              color: Colors.indigo.shade700,
               onTap: () {
                 Navigator.push(
                   context,
@@ -59,7 +59,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.article,
               label: 'Logs',
-              color: Colors.purple.shade100,
+              color: Colors.indigo.shade400,
               onTap: () {
                 Navigator.push(
                   context,
@@ -70,7 +70,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.window,
               label: 'Paquetes',
-              color: Colors.teal.shade100,
+              color: Colors.indigo.shade800,
               onTap: () {
                 Navigator.push(
                   context,
@@ -81,7 +81,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.notifications,
               label: 'Notificaciones',
-              color: Colors.amber.shade100,
+              color: Colors.indigo.shade300,
               onTap: () {
                 Navigator.push(
                   context,
@@ -92,7 +92,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.info,
               label: 'SAA INFO',
-              color: Colors.lightBlue.shade100,
+              color: Colors.indigo.shade200,
               onTap: () {
                 Navigator.push(
                   context,
@@ -103,7 +103,7 @@ class DataScreen extends StatelessWidget {
             DataButton(
               icon: Icons.list_alt,
               label: 'SAAS LOGS',
-              color: Colors.green.shade100,
+              color: Colors.indigo.shade900,
               onTap: () {
                 Navigator.push(
                   context,
