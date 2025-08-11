@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../widgets/data_button.dart';
-import 'entries/entries_screen.dart';
-import 'notices/notices_screen.dart';
-import 'detections/detections_screen.dart';
-import 'logs/logs_screen.dart';
-import 'packages/packages_screen.dart';
-import 'system_notices/system_notices_screen.dart';
-import 'applogs/applogs_screen.dart';
-import 'systems/systems_dashboard.dart';
+import '../../widgets/data_button.dart';
+import 'entries_screen.dart';
+import 'notices_screen.dart';
+import 'detections_screen.dart';
+import 'logs_screen.dart';
+import 'packages_screen.dart';
+import 'system_notices_screen.dart';
+import 'applogs_screen.dart';
+import 'systems_dashboard.dart';
 
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
