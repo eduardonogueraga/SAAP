@@ -5,6 +5,7 @@ import 'notices/notices_screen.dart';
 import 'detections/detections_screen.dart';
 import 'logs/logs_screen.dart';
 import 'packages/packages_screen.dart';
+import 'system_notices/system_notices_screen.dart';
 
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
@@ -80,7 +81,10 @@ class DataScreen extends StatelessWidget {
               label: 'Notificaciones',
               color: Colors.amber.shade100,
               onTap: () {
-                // TODO: Navegar a Notificaciones
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SystemNoticesScreen()),
+                );
               },
             ),
             DataButton(
