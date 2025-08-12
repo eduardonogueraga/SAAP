@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../services/api_service.dart';
+import '../../widgets/detail_info.dart';
 
 class PackageScreen extends StatefulWidget {
   const PackageScreen({super.key});
@@ -106,34 +107,22 @@ class _PackageScreenState extends State<PackageScreen> {
       title: Text("$title (${data.length})"),
       children: data.asMap().entries.map((entry) {
         final index = entry.key;
-        final item = entry.value;
+        final dynamic itemData = entry.value;
+        final Map<String, dynamic> item = itemData is Map<String, dynamic> 
+            ? itemData 
+            : {'Detalle': itemData.toString()};
+            
         return ListTile(
           title: Text("$title #${index + 1}"),
           trailing: const Icon(Icons.info_outline),
           onTap: () {
-            showDialog(
+            showModalBottomSheet(
               context: context,
-              builder: (_) => AlertDialog(
-                title: Text("$title #${index + 1}"),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: item.entries
-                        .map<Widget>(
-                          (e) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text("${e.key}: ${e.value}"),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cerrar"),
-                  ),
-                ],
+              isScrollControlled: true,
+              builder: (context) => DetailInfo(
+                title: '$title #${index + 1}',
+                data: item,
+                dateKeys: {'fecha', 'created_at', 'updated_at', 'fecha_creacion'},
               ),
             );
           },
@@ -152,12 +141,16 @@ class _PackageScreenState extends State<PackageScreen> {
           if (details.containsKey('counts') && details['counts'] is Map)
             _buildCounts(details['counts']),
           const SizedBox(height: 8),
+          if (details.containsKey('package') && details['package'] is Map)
+            _buildSection(title: "Paquete", data: [details['package']]),
           if (details.containsKey('entries'))
-            _buildSection(title: "Entries", data: List.from(details['entries'])),
+            _buildSection(title: "Entradas", data: List.from(details['entries'])),
           if (details.containsKey('logs'))
             _buildSection(title: "Logs", data: List.from(details['logs'])),
+          if (details.containsKey('detections'))
+            _buildSection(title: "Detecciones", data: List.from(details['detections'] ?? [])),
           if (details.containsKey('notices'))
-            _buildSection(title: "Notices", data: List.from(details['notices'])),
+            _buildSection(title: "Avisos", data: List.from(details['notices'])),
         ],
       ),
     );
@@ -186,7 +179,8 @@ class _PackageScreenState extends State<PackageScreen> {
           return Column(
             children: [
               ListTile(
-                title: Text("📦 Paquete #$pkgId"),
+                leading: const Icon(Icons.window),
+                title: Text('Paquete ${pkgId.toString().padLeft(9, '0')}'),
                 subtitle: Text(pkg['fecha'] ?? 'Sin fecha'),
                 trailing: Icon(
                   isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
