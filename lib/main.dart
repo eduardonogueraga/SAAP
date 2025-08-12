@@ -4,7 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'widgets/bottom_nav_bar.dart';
 import 'screens/home_screen.dart';
 import 'screens/data/data_screen.dart';
-import 'screens/package_screen.dart';
+import 'screens/package/package_screen.dart';
 import 'screens/alarm_screen.dart';
 
 Future<void> main() async {
