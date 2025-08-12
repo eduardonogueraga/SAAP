@@ -171,7 +171,7 @@ class _PackageScreenState extends State<PackageScreen> {
     if (lowerTitle.contains('log')) return Icons.assignment;
     if (lowerTitle.contains('deteccion')) return Icons.warning_amber_rounded;
     if (lowerTitle.contains('aviso')) return Icons.notifications;
-    if (lowerTitle.contains('paquete')) return Icons.inventory_2_outlined;
+    if (lowerTitle.contains('paquete')) return Icons.window;
     return Icons.info_outline;
   }
 
@@ -237,7 +237,7 @@ class _PackageScreenState extends State<PackageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Paquetes")),
+      appBar: AppBar(title: const Text("Historial de paquetes")),
       body: ListView.builder(
         controller: _scrollController,
         itemCount: _packages.length + (_isLoading ? 1 : 0),
@@ -259,7 +259,7 @@ class _PackageScreenState extends State<PackageScreen> {
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.green.withOpacity(0.1),
-                  child: const Icon(Icons.inventory_2_outlined, color: Colors.green),
+                  child: const Icon(Icons.window, color: Colors.green),
                 ),
                 title: Text(
                   'Paquete ${pkgId.toString().padLeft(9, '0')}',
