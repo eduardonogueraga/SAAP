@@ -82,12 +82,24 @@ class _PackageScreenState extends State<PackageScreen> {
   }
 
   Widget _buildCounts(Map<String, dynamic> counts) {
+    // Mapa de traducciones de claves a español
+    final translations = <String, String>{
+      'entries': 'Entradas',
+      'logs': 'Logs',
+      'detections': 'Detecciones',
+      'notices': 'Avisos',
+    };
+
     return Wrap(
       spacing: 8,
       children: counts.entries.map((e) {
+        // Usar la traducción si existe, o la clave original
+        final displayName = translations[e.key.toLowerCase()] ?? e.key;
         return Chip(
-          label: Text("${e.key}: ${e.value}"),
+          label: Text('$displayName: ${e.value}'),
           backgroundColor: Colors.blue.shade100,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          labelStyle: const TextStyle(fontSize: 13),
         );
       }).toList(),
     );
@@ -97,30 +109,51 @@ class _PackageScreenState extends State<PackageScreen> {
     required String title,
     required List<dynamic> data,
   }) {
-    if (data.isEmpty) {
-      return ListTile(
-        title: Text(title),
-        subtitle: const Text("⚠ Vacío", style: TextStyle(color: Colors.red)),
-      );
-    }
+    // Don't show empty sections at all
+    if (data.isEmpty) return const SizedBox.shrink();
+    
+    final sectionColor = _getSectionColor(title);
+    
     return ExpansionTile(
-      title: Text("$title (${data.length})"),
-      children: data.asMap().entries.map((entry) {
-        final index = entry.key;
-        final dynamic itemData = entry.value;
+      leading: CircleAvatar(
+        backgroundColor: sectionColor.withOpacity(0.2),
+        child: Icon(_getSectionIcon(title), color: sectionColor, size: 20),
+      ),
+      title: Text("$title (${data.length})", style: TextStyle(fontWeight: FontWeight.w500)),
+      children: data.map((itemData) {
         final Map<String, dynamic> item = itemData is Map<String, dynamic> 
             ? itemData 
             : {'Detalle': itemData.toString()};
             
+        // Format title as 'Type: 000000123' (e.g., 'Detection: 000000123')
+        final itemId = item['id']?.toString() ?? '';
+        final formattedId = itemId.isNotEmpty 
+            ? itemId.padLeft(9, '0')
+            : '';
+        final displayTitle = itemId.isNotEmpty 
+            ? '${title.replaceAll(RegExp(r's$'), '')}: $formattedId' 
+            : title;
+            
+        final itemColor = _getSectionColor(title);
+        
         return ListTile(
-          title: Text("$title #${index + 1}"),
-          trailing: const Icon(Icons.info_outline),
+          leading: CircleAvatar(
+            backgroundColor: itemColor.withOpacity(0.1),
+            radius: 18,
+            child: Icon(_getSectionIcon(title), color: itemColor, size: 16),
+          ),
+          title: Text(displayTitle, style: const TextStyle(fontSize: 15)),
+          trailing: CircleAvatar(
+            backgroundColor: itemColor.withOpacity(0.1),
+            radius: 14,
+            child: Icon(Icons.chevron_right, color: itemColor, size: 18),
+          ),
           onTap: () {
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               builder: (context) => DetailInfo(
-                title: '$title #${index + 1}',
+                title: displayTitle,
                 data: item,
                 dateKeys: {'fecha', 'created_at', 'updated_at', 'fecha_creacion'},
               ),
@@ -131,27 +164,72 @@ class _PackageScreenState extends State<PackageScreen> {
     );
   }
 
+  // Helper method to get icon for each section type
+  IconData _getSectionIcon(String title) {
+    final lowerTitle = title.toLowerCase();
+    if (lowerTitle.contains('entrada')) return Icons.input;
+    if (lowerTitle.contains('log')) return Icons.assignment;
+    if (lowerTitle.contains('deteccion')) return Icons.warning_amber_rounded;
+    if (lowerTitle.contains('aviso')) return Icons.notifications;
+    if (lowerTitle.contains('paquete')) return Icons.inventory_2_outlined;
+    return Icons.info_outline;
+  }
+
+  // Helper method to get color for each section type
+  Color _getSectionColor(String title) {
+    final lowerTitle = title.toLowerCase();
+    if (lowerTitle.contains('entrada')) return Colors.blue;
+    if (lowerTitle.contains('log')) return Colors.orange;
+    if (lowerTitle.contains('deteccion')) return Colors.red;
+    if (lowerTitle.contains('aviso')) return Colors.amber;
+    if (lowerTitle.contains('paquete')) return Colors.green;
+    return Colors.grey;
+  }
+
   Widget _buildPackageDetails(Map<String, dynamic> details) {
+    final List<Widget> children = [];
+    
+    // Add counts if available
+    if (details.containsKey('counts') && details['counts'] is Map) {
+      children.add(_buildCounts(details['counts']));
+      children.add(const SizedBox(height: 8));
+    }
+    
+    // Add package details if available
+    if (details.containsKey('package') && details['package'] is Map) {
+      final packageSection = _buildSection(
+        title: "Paquete", 
+        data: [details['package']]
+      );
+      if (packageSection is! SizedBox) children.add(packageSection);
+    }
+    
+    // Add other sections only if they have data
+    final sections = [
+      {"key": "entries", "title": "Entradas"},
+      {"key": "logs", "title": "Logs"},
+      {"key": "detections", "title": "Detecciones"},
+      {"key": "notices", "title": "Avisos"},
+    ];
+    
+    for (var section in sections) {
+      if (details[section['key']] is List && (details[section['key']] as List).isNotEmpty) {
+        final sectionWidget = _buildSection(
+          title: section['title']!,
+          data: List.from(details[section['key']])
+        );
+        if (sectionWidget is! SizedBox) {
+          children.add(sectionWidget);
+        }
+      }
+    }
+    
     return Container(
       color: Colors.grey[100],
       padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (details.containsKey('counts') && details['counts'] is Map)
-            _buildCounts(details['counts']),
-          const SizedBox(height: 8),
-          if (details.containsKey('package') && details['package'] is Map)
-            _buildSection(title: "Paquete", data: [details['package']]),
-          if (details.containsKey('entries'))
-            _buildSection(title: "Entradas", data: List.from(details['entries'])),
-          if (details.containsKey('logs'))
-            _buildSection(title: "Logs", data: List.from(details['logs'])),
-          if (details.containsKey('detections'))
-            _buildSection(title: "Detecciones", data: List.from(details['detections'] ?? [])),
-          if (details.containsKey('notices'))
-            _buildSection(title: "Avisos", data: List.from(details['notices'])),
-        ],
+        children: children,
       ),
     );
   }
@@ -179,11 +257,22 @@ class _PackageScreenState extends State<PackageScreen> {
           return Column(
             children: [
               ListTile(
-                leading: const Icon(Icons.window),
-                title: Text('Paquete ${pkgId.toString().padLeft(9, '0')}'),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.green.withOpacity(0.1),
+                  child: const Icon(Icons.inventory_2_outlined, color: Colors.green),
+                ),
+                title: Text(
+                  'Paquete ${pkgId.toString().padLeft(9, '0')}',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
                 subtitle: Text(pkg['fecha'] ?? 'Sin fecha'),
-                trailing: Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                trailing: CircleAvatar(
+                  backgroundColor: Colors.green.withOpacity(0.1),
+                  radius: 16,
+                  child: Icon(
+                    isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    color: Colors.green,
+                  ),
                 ),
                 onTap: () => _fetchPackageDetails(pkgId),
               ),
