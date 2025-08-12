@@ -258,20 +258,38 @@ class _PackageScreenState extends State<PackageScreen> {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.green.withOpacity(0.1),
-                  child: const Icon(Icons.window, color: Colors.green),
+                  backgroundColor: pkg['implantado'] == 0 
+                      ? Colors.red.shade100 
+                      : (pkg['vacio'] == 1 ? Colors.blueGrey.shade100 : Colors.green.withOpacity(0.2)),
+                  child: Icon(
+                    Icons.window, 
+                    color: pkg['implantado'] == 0 
+                        ? Colors.red.shade700 
+                        : (pkg['vacio'] == 1 ? Colors.blueGrey.shade700 : Colors.green.shade700),
+                  ),
                 ),
                 title: Text(
                   'Paquete ${pkgId.toString().padLeft(9, '0')}',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: pkg['vacio'] == 1 ? Colors.blueGrey.shade700 : null,
+                  ),
                 ),
-                subtitle: Text(pkg['fecha'] ?? 'Sin fecha'),
+                subtitle: Text(
+                  pkg['fecha'] ?? 'Sin fecha',
+                  style: pkg['vacio'] == 1 
+                      ? TextStyle(
+                          color: Colors.blueGrey.shade600,
+                          fontSize: 13,
+                        ) 
+                      : null,
+                ),
                 trailing: CircleAvatar(
-                  backgroundColor: Colors.green.withOpacity(0.1),
+                  backgroundColor: Colors.transparent,
                   radius: 16,
                   child: Icon(
                     isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                    color: Colors.green,
+                    color: pkg['vacio'] == 1 ? Colors.blueGrey.shade500 : Colors.green.shade700,
                   ),
                 ),
                 onTap: () => _fetchPackageDetails(pkgId),
