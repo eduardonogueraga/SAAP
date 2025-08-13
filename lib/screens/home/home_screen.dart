@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           image: const DecorationImage(
-            image: NetworkImage('https://picsum.photos/800/800'), // Imagen de prueba
+            image: AssetImage('assets/images/alberquilla_01.jpeg'),
             fit: BoxFit.cover,
           ),
           boxShadow: [
