@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
+import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
 import '../../services/api_service.dart';
 import 'alarm_details_screen.dart';
@@ -66,20 +67,25 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  String _formatDate(String? dateString) {
-    if (dateString == null) return '';
-    try {
-      // Handle the date format: "Sun, 06 Jul 2025 13:16:26 GMT"
-      final date = DateTime.parse(dateString);
-      final day = date.day.toString().padLeft(2, '0');
-      final month = _getMonthName(date.month);
-      return '$day $month';
-    } catch (e) {
-      print('Error formatting date $dateString: $e');
-      return '';
-    }
+String _formatDate(String? dateString) {
+  if (dateString == null) return '';
+  try {
+    // Quitar ' GMT' porque DateFormat no lo reconoce
+    final cleanedDate = dateString.replaceAll(' GMT', '');
+    
+    // Parse usando intl
+    final parsedDate = DateFormat('EEE, dd MMM yyyy HH:mm:ss', 'en_US')
+        .parseUtc(cleanedDate)
+        .toLocal();
+    
+    final day = parsedDate.day.toString().padLeft(2, '0');
+    final month = _getMonthName(parsedDate.month);
+    return '$day $month';
+  } catch (e) {
+    print('Error formatting date $dateString: $e');
+    return '';
   }
-
+}
   String _getMonthName(int month) {
     const months = [
       'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
@@ -91,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildAlarmStatusCard(bool isActive, double size) {
     final createdAt = latestEntry?['fecha']?.toString() ?? latestEntry?['created_at']?.toString();
     final formattedDate = _formatDate(createdAt);
-    
+        
     // Determine alarm status based on 'tipo' field
     final alarmStatus = latestEntry?['tipo']?.toString() ?? '';
     final isAlarmActive = alarmStatus == 'activacion';
@@ -166,9 +172,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  if (formattedDate.isNotEmpty)
                     Text(
-                      formattedDate,
+                      'Última visita: $formattedDate',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
