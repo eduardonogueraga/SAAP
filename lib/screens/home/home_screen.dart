@@ -161,7 +161,7 @@ String _formatDate(String? dateString) {
                     'Alberquilla, Librilla',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       shadows: [
                         Shadow(
@@ -176,7 +176,7 @@ String _formatDate(String? dateString) {
                       'Última visita: $formattedDate',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 20,
                         fontStyle: FontStyle.italic,
                         shadows: [
                           Shadow(

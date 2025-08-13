@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import '../../widgets/detail_info.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -68,25 +69,77 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
   }
 
   void _showItemDetails(BuildContext context, Map<String, dynamic> item) {
+    // Determine the item type for the title
+    String itemType = 'Detalles';
+    IconData itemIcon = Icons.info_outline;
+    Color itemColor = Theme.of(context).primaryColor;
+    
+    // Determine type based on available fields
+    if (item.containsKey('detection_id')) {
+      itemType = 'Detección';
+      itemIcon = Icons.sensors;
+      itemColor = Colors.orange;
+    } else if (item.containsKey('notice_id')) {
+      itemType = 'Aviso';
+      itemIcon = Icons.notifications;
+      itemColor = Colors.blue;
+    } else if (item.containsKey('log_id')) {
+      itemType = 'Log del sistema';
+      itemIcon = Icons.article;
+      itemColor = Colors.grey;
+    }
+
     showModalBottomSheet(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       context: context,
       isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: item.entries.map((entry) {
-              return _buildInfoRow(
-                entry.key,
-                entry.value?.toString() ?? '',
-              );
-            }).toList(),
-          ),
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Just the handle for the bottom sheet
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 8, bottom: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).dividerColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Content
+            Expanded(
+              child: DetailInfo(
+                title: '',
+                data: item,
+                dateKeys: {'fecha', 'created_at', 'updated_at'},
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  // Helper method to get title and icon for each item type
+  (String, IconData, Color) _getItemTypeInfo(String sectionTitle, Map<String, dynamic> item) {
+    switch (sectionTitle.toLowerCase()) {
+      case 'detecciones':
+        return ('Detección', Icons.sensors, Colors.orange);
+      case 'avisos':
+        return ('Aviso', Icons.notifications, Colors.blue);
+      case 'logs':
+        return ('Log', Icons.article, Colors.grey);
+      default:
+        return ('Elemento', Icons.info, Theme.of(context).primaryColor);
+    }
   }
 
   Widget _buildExpandableSection(
@@ -98,31 +151,48 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Theme(
-        data: ThemeData().copyWith(
+        data: Theme.of(context).copyWith(
           dividerColor: Colors.transparent,
-          unselectedWidgetColor: Colors.white70,
-          colorScheme: ColorScheme.dark(primary: Colors.blueAccent),
+          unselectedWidgetColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
         child: ExpansionTile(
+          leading: _getItemTypeInfo(title, {}).$2 != null
+              ? Icon(_getItemTypeInfo(title, {}).$2, 
+                    color: _getItemTypeInfo(title, {}).$3)
+              : null,
           title: Text(
             "$title (${items.length})",
-            style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Theme.of(context).textTheme.titleMedium?.color,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           children: items.isNotEmpty
               ? items.map((item) {
                   final idValue = item[idKey] ?? item['id'];
+                  final (typeName, icon, color) = _getItemTypeInfo(title, item);
+                  
                   return ListTile(
+                    leading: Icon(icon, color: color),
                     title: Text(
-                      "ID: ${formatId(idValue)}",
-                      style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                      "$typeName ${formatId(idValue)}",
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     subtitle: Text(
-                      item['fecha'] ?? '',
-                      style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8)),
+                      item['fecha'] ?? 'Sin fecha',
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                        fontSize: 13,
+                      ),
                     ),
-                    trailing: Icon(Icons.arrow_forward_ios,
-                        size: 16, color: Theme.of(context).iconTheme.color?.withOpacity(0.7)),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16, 
+                      color: Theme.of(context).iconTheme.color?.withOpacity(0.7)
+                    ),
                     onTap: () => _showItemDetails(context, item),
                   );
                 }).toList()
@@ -131,7 +201,10 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       "No hay elementos",
-                      style: const TextStyle(color: Colors.black54),
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   )
                 ],
