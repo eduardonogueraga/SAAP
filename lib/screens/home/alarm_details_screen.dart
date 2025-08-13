@@ -51,13 +51,13 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(color: Colors.white70),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8)),
             ),
           ),
           Flexible(
             child: Text(
               value,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
               textAlign: TextAlign.right,
               overflow: TextOverflow.ellipsis,
             ),
@@ -69,7 +69,7 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
 
   void _showItemDetails(BuildContext context, Map<String, dynamic> item) {
     showModalBottomSheet(
-      backgroundColor: const Color(0xFF2A2A2A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       context: context,
       isScrollControlled: true,
       builder: (context) => Padding(
@@ -94,7 +94,7 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Theme(
@@ -107,7 +107,7 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
           title: Text(
             "$title (${items.length})",
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
+                color: Colors.black, fontWeight: FontWeight.bold),
           ),
           children: items.isNotEmpty
               ? items.map((item) {
@@ -115,23 +115,23 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
                   return ListTile(
                     title: Text(
                       "ID: ${formatId(idValue)}",
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                     ),
                     subtitle: Text(
                       item['fecha'] ?? '',
-                      style: const TextStyle(color: Colors.white70),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8)),
                     ),
-                    trailing: const Icon(Icons.arrow_forward_ios,
-                        size: 16, color: Colors.white54),
+                    trailing: Icon(Icons.arrow_forward_ios,
+                        size: 16, color: Theme.of(context).iconTheme.color?.withOpacity(0.7)),
                     onTap: () => _showItemDetails(context, item),
                   );
                 }).toList()
               : [
-                  const Padding(
-                    padding: EdgeInsets.all(16),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Text(
                       "No hay elementos",
-                      style: TextStyle(color: Colors.white54),
+                      style: const TextStyle(color: Colors.black54),
                     ),
                   )
                 ],
@@ -143,19 +143,19 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Detalles de la Alarma'),
-        backgroundColor: Colors.black87,
+        title: const Text('Detalles de la Alarma', style: TextStyle(color: Colors.white)),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+          ? const Center(child: CircularProgressIndicator())
           : entryDetails == null
-              ? const Center(
+              ? Center(
                   child: Text(
                     'No se pudieron cargar los detalles',
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8)),
                   ),
                 )
               : SingleChildScrollView(
@@ -167,7 +167,7 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2A2A2A),
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
@@ -197,7 +197,7 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.blueGrey[800],
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(

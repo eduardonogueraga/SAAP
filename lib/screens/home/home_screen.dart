@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:developer' as developer;
+import 'package:flutter/foundation.dart';
 import '../../services/api_service.dart';
 import 'alarm_details_screen.dart';
 
@@ -17,6 +20,28 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadData();
+    // Add listener for when the app returns to the foreground
+    SystemChannels.lifecycle.setMessageHandler((msg) async {
+      if (msg == AppLifecycleState.resumed.toString() && mounted) {
+        await _loadData();
+      }
+      return null;
+    });
+  }
+
+  Future<void> _navigateToAlarmDetails() async {
+    if (latestEntry != null) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AlarmDetailsScreen(entryId: latestEntry!['id']),
+        ),
+      );
+      // Refresh data when returning from details screen
+      if (mounted) {
+        await _loadData();
+      }
+    }
   }
 
   Future<void> _loadData() async {
@@ -41,15 +66,47 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String _formatDate(String? dateString) {
+    if (dateString == null) return '';
+    try {
+      // Handle the date format: "Sun, 06 Jul 2025 13:16:26 GMT"
+      final date = DateTime.parse(dateString);
+      final day = date.day.toString().padLeft(2, '0');
+      final month = _getMonthName(date.month);
+      return '$day $month';
+    } catch (e) {
+      print('Error formatting date $dateString: $e');
+      return '';
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+    return months[month - 1];
+  }
+
   Widget buildAlarmStatusCard(bool isActive, double size) {
+    final createdAt = latestEntry?['fecha']?.toString() ?? latestEntry?['created_at']?.toString();
+    final formattedDate = _formatDate(createdAt);
+    
+    // Determine alarm status based on 'tipo' field
+    final alarmStatus = latestEntry?['tipo']?.toString() ?? '';
+    final isAlarmActive = alarmStatus == 'activacion';
+    
+    // Debug prints
+    if (kDebugMode) {
+      print('Latest entry: $latestEntry');
+      print('Alarm status: $alarmStatus');
+      print('Created at: $createdAt');
+      print('Formatted date: $formattedDate');
+    }
+
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AlarmDetailsScreen(entryId: latestEntry!['id']),
-          ),
-        );
+        _navigateToAlarmDetails();
       },
       child: Container(
         width: size,
@@ -68,23 +125,67 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        child: Center(
-          child: Text(
-            isActive ? "ALARMA ACTIVADA" : "ALARMA DESACTIVADA",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.bold, // Letra más gruesa
-              shadows: [
-                Shadow(
-                  color: Colors.black54,
-                  blurRadius: 5,
-                  offset: Offset(1, 1),
+        child: Stack(
+          children: [
+            Center(
+              child: Text(
+                isAlarmActive ? "ALARMA ACTIVADA" : "ALARMA DESACTIVADA",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  shadows: const [
+                    Shadow(
+                      color: Colors.black54,
+                      blurRadius: 15,
+                      offset: Offset(1, 1),
+                    ),
+                  ],
                 ),
-              ],
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
+            Positioned(
+              right: 20,
+              bottom: 20,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text(
+                    'Alberquilla, Librilla',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black54,
+                          blurRadius: 5,
+                          offset: Offset(1, 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (formattedDate.isNotEmpty)
+                    Text(
+                      formattedDate,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            blurRadius: 5,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -97,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
     double cardSize = MediaQuery.of(context).size.height * 0.5;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: isLoading
             ? const Center(child: CircularProgressIndicator(color: Colors.white))
