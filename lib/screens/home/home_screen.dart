@@ -198,6 +198,59 @@ String _formatDate(String? dateString) {
 
   String formatId(int id) => id.toString().padLeft(9, '0');
 
+  Widget _buildStatCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.titleLarge?.color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double cardSize = MediaQuery.of(context).size.height * 0.5;
@@ -224,6 +277,40 @@ String _formatDate(String? dateString) {
                         buildAlarmStatusCard(
                           latestEntry!['tipo'] == 'activacion',
                           cardSize,
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        // Grid de estadísticas
+                        GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.0,
+                          children: [
+                            _buildStatCard(
+                              context,
+                              'Detecciones',
+                              latestEntry?['detections_count']?.toString() ?? '0',
+                              Icons.sensors,
+                              Colors.orange,
+                            ),
+                            _buildStatCard(
+                              context,
+                              'Avisos',
+                              latestEntry?['notices_count']?.toString() ?? '0',
+                              Icons.notifications,
+                              Colors.blue,
+                            ),
+                            _buildStatCard(
+                              context,
+                              'Logs',
+                              latestEntry?['logs_count']?.toString() ?? '0',
+                              Icons.article,
+                              Colors.grey,
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
 

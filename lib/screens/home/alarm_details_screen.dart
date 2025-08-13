@@ -266,29 +266,6 @@ class _AlarmDetailsScreenState extends State<AlarmDetailsScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Conteos
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          children: [
-                            _buildInfoRow(
-                                'Detecciones',
-                                entryDetails!['counts']['detections']
-                                    .toString()),
-                            _buildInfoRow(
-                                'Avisos',
-                                entryDetails!['counts']['notices'].toString()),
-                            _buildInfoRow(
-                                'Logs', entryDetails!['counts']['logs'].toString()),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
                       // Secciones expandibles con listado clicable
                       _buildExpandableSection(
                           'Detecciones', entryDetails!['detections'], 'detection_id'),
