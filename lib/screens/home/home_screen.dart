@@ -41,90 +41,123 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Widget buildAlarmStatusCard(bool isActive, double size) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AlarmDetailsScreen(entryId: latestEntry!['id']),
+          ),
+        );
+      },
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          image: const DecorationImage(
+            image: NetworkImage('https://picsum.photos/800/800'), // Imagen de prueba
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            isActive ? "ALARMA ACTIVADA" : "ALARMA DESACTIVADA",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.bold, // Letra más gruesa
+              shadows: [
+                Shadow(
+                  color: Colors.black54,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
   String formatId(int id) => id.toString().padLeft(9, '0');
 
   @override
   Widget build(BuildContext context) {
+    double cardSize = MediaQuery.of(context).size.height * 0.5;
+
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E1E),
-      appBar: AppBar(
-        title: const Text('Estado de la Alarma'),
-        backgroundColor: Colors.black87,
-        elevation: 0,
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.white))
-          : latestEntry == null
-              ? const Center(
-                  child: Text(
-                    'No hay datos disponibles',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Bloque 1: Estado de la alarma
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2A2A2A),
-                          borderRadius: BorderRadius.circular(16),
+      body: SafeArea(
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator(color: Colors.white))
+            : latestEntry == null
+                ? const Center(
+                    child: Text(
+                      'No hay datos disponibles',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        // Recuadro de la alarma (mitad de la pantalla)
+                        buildAlarmStatusCard(
+                          latestEntry!['tipo'] == 'activacion',
+                          cardSize,
                         ),
-                        child: Text(
-                          latestEntry!['tipo'] == 'activacion'
-                              ? 'La alarma está ACTIVADA'
-                              : 'La alarma está DESACTIVADA',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: latestEntry!['tipo'] == 'activacion'
-                                ? Colors.greenAccent
-                                : Colors.redAccent,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 20),
 
-                      // Bloque 2: Botón de detalles
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  AlarmDetailsScreen(entryId: latestEntry!['id']),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.blueGrey[800],
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          padding: const EdgeInsets.all(20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                'Ver detalles de la alarma',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
+                        // Botón de detalles
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    AlarmDetailsScreen(entryId: latestEntry!['id']),
                               ),
-                              Icon(Icons.arrow_forward_ios,
-                                  color: Colors.white54, size: 18),
-                            ],
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[800],
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: const EdgeInsets.all(20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Text(
+                                  'Ver detalles de la alarma',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Icon(Icons.arrow_forward_ios,
+                                    color: Colors.white54, size: 18),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+      ),
     );
   }
 }
